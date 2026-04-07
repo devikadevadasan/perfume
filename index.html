@@ -457,7 +457,7 @@ moods.forEach((m, i) => {
   const btn = document.createElement('div');
   btn.className = 'mood-btn';
   btn.style.background = m.color;
-  btn.innerHTML = <span class="mood-icon">${m.icon}</span><span class="mood-name">${m.name}</span><span class="mood-note">${m.note}</span>;
+  btn.innerHTML = `<span class="mood-icon">${m.icon}</span><span class="mood-name">${m.name}</span><span class="mood-note">${m.note}</span>`;
   btn.onclick = () => selectMood(i, btn);
   moodGrid.appendChild(btn);
 });
@@ -496,7 +496,7 @@ for(let i=0;i<28;i++){
   const p = document.createElement('div');
   p.className='floating-petal';
   const size = 8 + Math.random()*14;
-  p.style.cssText=width:${size}px;height:${size*0.7}px;left:${Math.random()*100}%;background:${petalColors[Math.floor(Math.random()*petalColors.length)]};animation-duration:${8+Math.random()*14}s;animation-delay:${Math.random()*12}s;;
+  p.style.cssText=`width:${size}px;height:${size*0.7}px;left:${Math.random()*100}%;background:${petalColors[Math.floor(Math.random()*petalColors.length)]};animation-duration:${8+Math.random()*14}s;animation-delay:${Math.random()*12}s;`;
   bg.appendChild(p);
 }
 
@@ -515,15 +515,15 @@ function drawFlower(canvasId, hue, petals, open) {
     const py = cy + Math.sin(angle)*r;
     ctx.beginPath();
     ctx.ellipse(px,py, r*0.55*open, r*0.35*open, angle, 0, Math.PI*2);
-    ctx.fillStyle = hsla(${hue},70%,80%,0.85);
+    ctx.fillStyle = `hsla(${hue},70%,80%,0.85)`;
     ctx.fill();
-    ctx.strokeStyle=hsla(${hue},60%,65%,0.5);
+    ctx.strokeStyle=`hsla(${hue},60%,65%,0.5)`;
     ctx.lineWidth=0.5;
     ctx.stroke();
   }
   ctx.beginPath();
   ctx.arc(cx,cy,5*open,0,Math.PI*2);
-  ctx.fillStyle=hsl(${hue+30},75%,65%);
+  ctx.fillStyle=`hsl(${hue+30},75%,65%)`;
   ctx.fill();
 }
 
