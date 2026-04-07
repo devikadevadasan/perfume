@@ -1,0 +1,592 @@
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300&family=Lato:wght@300;400&display=swap');
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body, #app {
+    font-family: 'Lato', sans-serif;
+    background: #fdf6f0;
+    color: #5a3e36;
+    min-height: 100vh;
+  }
+
+  #app { overflow: hidden; }
+
+  .hero {
+    position: relative;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    background: linear-gradient(180deg, #fdeef5 0%, #fdf6f0 60%, #f7e8d8 100%);
+  }
+
+  .petals-bg {
+    position: absolute; inset: 0;
+    pointer-events: none;
+    overflow: hidden;
+  }
+
+  .floating-petal {
+    position: absolute;
+    border-radius: 50% 0 50% 0;
+    opacity: 0;
+    animation: floatPetal linear infinite;
+  }
+
+  @keyframes floatPetal {
+    0%   { transform: translateY(110vh) rotate(0deg); opacity: 0; }
+    10%  { opacity: 0.6; }
+    90%  { opacity: 0.4; }
+    100% { transform: translateY(-10vh) rotate(360deg); opacity: 0; }
+  }
+
+  .hero-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(2.4rem, 6vw, 4.2rem);
+    font-weight: 300;
+    letter-spacing: 0.06em;
+    color: #6b2d4e;
+    text-align: center;
+    line-height: 1.2;
+    margin-bottom: 0.4rem;
+    position: relative;
+    z-index: 2;
+  }
+
+  .hero-subtitle {
+    font-size: 1rem;
+    font-weight: 300;
+    letter-spacing: 0.18em;
+    color: #b07a8a;
+    text-align: center;
+    text-transform: uppercase;
+    margin-bottom: 3rem;
+    position: relative;
+    z-index: 2;
+  }
+
+  .scroll-hint {
+    position: relative; z-index: 2;
+    font-size: 0.8rem;
+    letter-spacing: 0.2em;
+    color: #c9a0b0;
+    text-transform: uppercase;
+    animation: pulse 2s ease-in-out infinite;
+  }
+
+  @keyframes pulse { 0%,100%{opacity:0.5} 50%{opacity:1} }
+
+  .section {
+    padding: 5rem 1.5rem;
+    max-width: 900px;
+    margin: 0 auto;
+  }
+
+  .section-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(1.8rem, 4vw, 2.8rem);
+    font-weight: 300;
+    color: #6b2d4e;
+    text-align: center;
+    margin-bottom: 0.5rem;
+  }
+
+  .section-sub {
+    text-align: center;
+    color: #b07a8a;
+    font-size: 0.9rem;
+    letter-spacing: 0.1em;
+    margin-bottom: 3rem;
+  }
+
+  .bloom-stage {
+    display: flex;
+    justify-content: center;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+    margin-bottom: 3rem;
+  }
+
+  .flower-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .flower-canvas {
+    width: 90px; height: 90px;
+  }
+
+  .flower-label {
+    font-size: 0.75rem;
+    letter-spacing: 0.12em;
+    color: #b07a8a;
+    text-transform: uppercase;
+  }
+
+  .mood-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 1rem;
+    margin-bottom: 3rem;
+  }
+
+  .mood-btn {
+    background: white;
+    border: 1px solid #e8c9d4;
+    border-radius: 16px;
+    padding: 1.4rem 0.8rem;
+    cursor: pointer;
+    text-align: center;
+    transition: all 0.35s ease;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.6rem;
+  }
+
+  .mood-btn:hover {
+    border-color: #c97a9a;
+    background: #fdf0f5;
+    transform: translateY(-4px);
+    box-shadow: 0 8px 24px rgba(180, 80, 120, 0.12);
+  }
+
+  .mood-btn.active {
+    border-color: #9b3060;
+    background: #fce8f2;
+    transform: translateY(-4px);
+  }
+
+  .mood-icon { font-size: 1.6rem; }
+
+  .mood-name {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.05rem;
+    color: #6b2d4e;
+    font-weight: 400;
+  }
+
+  .mood-note {
+    font-size: 0.72rem;
+    color: #b07a8a;
+    letter-spacing: 0.06em;
+  }
+
+  .result-panel {
+    background: white;
+    border: 1px solid #e8c9d4;
+    border-radius: 20px;
+    padding: 2.5rem 2rem;
+    display: none;
+    animation: fadeUp 0.6s ease;
+  }
+
+  .result-panel.show { display: block; }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .result-header {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.3rem;
+    font-style: italic;
+    color: #b07a8a;
+    margin-bottom: 1.5rem;
+    text-align: center;
+  }
+
+  .perfume-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 1rem;
+  }
+
+  .perfume-card {
+    border: 1px solid #e8c9d4;
+    border-radius: 14px;
+    overflow: hidden;
+    transition: transform 0.3s ease;
+    cursor: pointer;
+  }
+
+  .perfume-card:hover { transform: translateY(-4px); }
+
+  .perfume-top {
+    height: 100px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2.2rem;
+  }
+
+  .perfume-info {
+    padding: 1rem;
+    background: white;
+  }
+
+  .perfume-name {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.05rem;
+    color: #6b2d4e;
+    margin-bottom: 0.25rem;
+  }
+
+  .perfume-desc {
+    font-size: 0.75rem;
+    color: #b07a8a;
+    line-height: 1.5;
+    margin-bottom: 0.8rem;
+  }
+
+  .perfume-price {
+    font-size: 0.85rem;
+    font-weight: 400;
+    color: #9b3060;
+    letter-spacing: 0.05em;
+  }
+
+  .add-btn {
+    display: block;
+    width: 100%;
+    margin-top: 0.6rem;
+    padding: 0.55rem;
+    background: #9b3060;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 0.78rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: background 0.25s;
+  }
+
+  .add-btn:hover { background: #7a2049; }
+
+  .music-bar {
+    position: fixed;
+    bottom: 1.5rem;
+    right: 1.5rem;
+    z-index: 100;
+    background: white;
+    border: 1px solid #e8c9d4;
+    border-radius: 50px;
+    padding: 0.6rem 1.2rem;
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+    box-shadow: 0 4px 20px rgba(180,80,120,0.12);
+    cursor: pointer;
+    transition: all 0.25s;
+    font-size: 0.78rem;
+    color: #b07a8a;
+    letter-spacing: 0.08em;
+  }
+
+  .music-bar:hover { background: #fdf0f5; }
+
+  .music-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: #9b3060;
+  }
+
+  .music-dot.playing { animation: beatPulse 0.8s ease-in-out infinite; }
+
+  @keyframes beatPulse {
+    0%,100%{ transform: scale(1); opacity: 1; }
+    50%{ transform: scale(1.5); opacity: 0.6; }
+  }
+
+  .nav {
+    position: fixed; top: 0; left: 0; right: 0;
+    z-index: 50;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1.2rem 2rem;
+    background: rgba(253,246,240,0.85);
+    backdrop-filter: blur(12px);
+    border-bottom: 0.5px solid #e8c9d4;
+  }
+
+  .nav-logo {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.3rem;
+    font-weight: 300;
+    letter-spacing: 0.12em;
+    color: #6b2d4e;
+  }
+
+  .nav-links {
+    display: flex;
+    gap: 2rem;
+    list-style: none;
+  }
+
+  .nav-links a {
+    text-decoration: none;
+    font-size: 0.78rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: #b07a8a;
+    transition: color 0.2s;
+  }
+
+  .nav-links a:hover { color: #6b2d4e; }
+
+  .divider {
+    width: 60px; height: 1px;
+    background: linear-gradient(90deg, transparent, #e0a0b8, transparent);
+    margin: 0 auto 3rem;
+  }
+</style>
+
+<div id="app">
+
+  <nav class="nav">
+    <span class="nav-logo">Âme Fleurie</span>
+    <ul class="nav-links">
+      <li><a href="#">Collection</a></li>
+      <li><a href="#">Ritual</a></li>
+      <li><a href="#">Atelier</a></li>
+    </ul>
+  </nav>
+
+  <section class="hero">
+    <div class="petals-bg" id="petalsBg"></div>
+    <p style="font-size:0.75rem;letter-spacing:0.22em;color:#c9a0b0;text-transform:uppercase;margin-bottom:1.2rem;position:relative;z-index:2;">Emotion-guided fragrance</p>
+    <h1 class="hero-title">Your mood,<br><em style="font-style:italic;color:#9b3060;">blooming</em> into scent</h1>
+    <p class="hero-subtitle">Discover the perfume your soul is craving</p>
+    <p class="scroll-hint">↓ explore the ritual</p>
+  </section>
+
+  <div style="background:#fdf6f0; padding-top:1rem;">
+    <section class="section">
+      <h2 class="section-title">In bloom for you</h2>
+      <p class="section-sub">Hand-gathered essences, alive with season</p>
+      <div class="divider"></div>
+      <div class="bloom-stage">
+        <div class="flower-wrap"><canvas class="flower-canvas" id="f1"></canvas><span class="flower-label">Rose</span></div>
+        <div class="flower-wrap"><canvas class="flower-canvas" id="f2"></canvas><span class="flower-label">Jasmine</span></div>
+        <div class="flower-wrap"><canvas class="flower-canvas" id="f3"></canvas><span class="flower-label">Lotus</span></div>
+        <div class="flower-wrap"><canvas class="flower-canvas" id="f4"></canvas><span class="flower-label">Peony</span></div>
+        <div class="flower-wrap"><canvas class="flower-canvas" id="f5"></canvas><span class="flower-label">Lavender</span></div>
+      </div>
+    </section>
+
+    <section class="section" style="padding-top:0;">
+      <h2 class="section-title">How are you feeling?</h2>
+      <p class="section-sub">Choose the emotion closest to your heart</p>
+      <div class="divider"></div>
+      <div class="mood-grid" id="moodGrid"></div>
+      <div class="result-panel" id="resultPanel">
+        <p class="result-header" id="resultHeader"></p>
+        <div class="perfume-cards" id="perfumeCards"></div>
+      </div>
+    </section>
+
+    <section style="background:#fce8f2; padding:4rem 1.5rem; text-align:center;">
+      <p style="font-family:'Cormorant Garamond',serif;font-size:1.8rem;font-weight:300;color:#6b2d4e;margin-bottom:1rem;">"Scent is the language the soul speaks<br>when words fall short."</p>
+      <p style="font-size:0.8rem;letter-spacing:0.15em;color:#b07a8a;text-transform:uppercase;">— The Âme Fleurie philosophy</p>
+    </section>
+  </div>
+
+  <div class="music-bar" id="musicBar" onclick="toggleMusic()">
+    <div class="music-dot" id="musicDot"></div>
+    <span id="musicLabel">Play ambience</span>
+  </div>
+
+</div>
+
+<script>
+const moods = [
+  { name:'Joyful', icon:'✨', note:'Light & sparkling', color:'#fdf0e0',
+    header:'For your radiant joy — scents that sparkle and dance',
+    perfumes:[
+      { name:'Soleil Doré', desc:'Neroli, mandarin & white musk', price:'₹4,200', bg:'#fff8e1', icon:'🌸' },
+      { name:'Pétale d\'Or', desc:'Mimosa, ylang-ylang & honey', price:'₹5,800', bg:'#fff3cd', icon:'🌼' },
+      { name:'Lumière Rose', desc:'Peach, rose & sandalwood', price:'₹3,900', bg:'#fdecea', icon:'🌷' },
+    ]},
+  { name:'Romantic', icon:'🌹', note:'Warm & tender', color:'#fde8f0',
+    header:'For your tender heart — deep, velvety, and adoring',
+    perfumes:[
+      { name:'Velours Rouge', desc:'Oud rose, patchouli & vanilla', price:'₹6,500', bg:'#f9dde5', icon:'🌹' },
+      { name:'Musc Amoureux', desc:'White rose, amber & iris', price:'₹5,200', bg:'#fce8f2', icon:'💐' },
+      { name:'Nuit de Satin', desc:'Bulgarian rose & dark musk', price:'₹7,800', bg:'#ede0f0', icon:'🌸' },
+    ]},
+  { name:'Calm', icon:'🌿', note:'Still & grounded', color:'#e8f4ec',
+    header:'For your peaceful stillness — cool, green, meditative',
+    perfumes:[
+      { name:'Forêt Sereine', desc:'Cedar, vetiver & green tea', price:'₹4,600', bg:'#e8f5e9', icon:'🌿' },
+      { name:'Eau de Sérénité', desc:'Bamboo, cucumber & white lotus', price:'₹3,800', bg:'#e1f5fe', icon:'🪷' },
+      { name:'Pierre Blanche', desc:'Lavender, oakmoss & iris', price:'₹5,100', bg:'#ede8f5', icon:'💜' },
+    ]},
+  { name:'Melancholy', icon:'🌧', note:'Deep & introspective', color:'#ece8f5',
+    header:'For your quiet depth — smoky, dark, comforting',
+    perfumes:[
+      { name:'Brume Violette', desc:'Violet, smoke & myrrh', price:'₹6,200', bg:'#ede0f0', icon:'🌫' },
+      { name:'Âme Sombre', desc:'Incense, dark rose & oud', price:'₹8,400', bg:'#e8e0f0', icon:'🖤' },
+      { name:'Larmes d\'Ambre', desc:'Amber, labdanum & musks', price:'₹5,700', bg:'#f5ede0', icon:'🍂' },
+    ]},
+  { name:'Adventurous', icon:'🔥', note:'Bold & electric', color:'#fff0e0',
+    header:'For your fearless spirit — bold, warm, unforgettable',
+    perfumes:[
+      { name:'Désert Ardent', desc:'Saffron, leather & benzoin', price:'₹7,100', bg:'#fff3e0', icon:'🌺' },
+      { name:'Feu Sauvage', desc:'Ginger, pepper & vetiver', price:'₹5,500', bg:'#ffe0b2', icon:'🔥' },
+      { name:'Or Noir', desc:'Black pepper, tobacco & vanilla', price:'₹9,000', bg:'#f3e5d5', icon:'✨' },
+    ]},
+  { name:'Nostalgic', icon:'🕊', note:'Soft & memory-warm', color:'#fdf3e8',
+    header:'For your tender memories — powdery, soft, timeless',
+    perfumes:[
+      { name:'Grand-mère\'s Garden', desc:'Violet, powder & heliotrope', price:'₹4,400', bg:'#fde8e8', icon:'🌸' },
+      { name:'Souvenir Doux', desc:'Iris, tonka bean & lily', price:'₹5,000', bg:'#fdf0e0', icon:'🕊' },
+      { name:'Enfance', desc:'Talc, freesia & soft musk', price:'₹3,600', bg:'#fce8f2', icon:'🌷' },
+    ]},
+];
+
+const moodGrid = document.getElementById('moodGrid');
+moods.forEach((m, i) => {
+  const btn = document.createElement('div');
+  btn.className = 'mood-btn';
+  btn.style.background = m.color;
+  btn.innerHTML = <span class="mood-icon">${m.icon}</span><span class="mood-name">${m.name}</span><span class="mood-note">${m.note}</span>;
+  btn.onclick = () => selectMood(i, btn);
+  moodGrid.appendChild(btn);
+});
+
+function selectMood(i, btn) {
+  document.querySelectorAll('.mood-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  const m = moods[i];
+  const panel = document.getElementById('resultPanel');
+  const header = document.getElementById('resultHeader');
+  const cards = document.getElementById('perfumeCards');
+  header.textContent = m.header;
+  cards.innerHTML = '';
+  m.perfumes.forEach(p => {
+    cards.innerHTML += `
+      <div class="perfume-card">
+        <div class="perfume-top" style="background:${p.bg}">${p.icon}</div>
+        <div class="perfume-info">
+          <p class="perfume-name">${p.name}</p>
+          <p class="perfume-desc">${p.desc}</p>
+          <p class="perfume-price">${p.price}</p>
+          <button class="add-btn">Add to bag</button>
+        </div>
+      </div>`;
+  });
+  panel.classList.remove('show');
+  void panel.offsetWidth;
+  panel.classList.add('show');
+  panel.scrollIntoView({ behavior:'smooth', block:'nearest' });
+}
+
+// Floating petals
+const bg = document.getElementById('petalsBg');
+const petalColors = ['#f7c5d8','#f9d9e9','#e8b4d0','#f5c6e0','#dba8c8','#f2d0e8','#e9bcd5'];
+for(let i=0;i<28;i++){
+  const p = document.createElement('div');
+  p.className='floating-petal';
+  const size = 8 + Math.random()*14;
+  p.style.cssText=width:${size}px;height:${size*0.7}px;left:${Math.random()*100}%;background:${petalColors[Math.floor(Math.random()*petalColors.length)]};animation-duration:${8+Math.random()*14}s;animation-delay:${Math.random()*12}s;;
+  bg.appendChild(p);
+}
+
+// Blooming flowers on canvas
+function drawFlower(canvasId, hue, petals, open) {
+  const c = document.getElementById(canvasId);
+  if(!c) return;
+  const ctx = c.getContext('2d');
+  const W = c.width = 90, H = c.height = 90;
+  const cx = W/2, cy = H/2;
+  ctx.clearRect(0,0,W,H);
+  const r = 18 * open;
+  for(let i=0;i<petals;i++){
+    const angle = (i/petals)*Math.PI*2;
+    const px = cx + Math.cos(angle)*r;
+    const py = cy + Math.sin(angle)*r;
+    ctx.beginPath();
+    ctx.ellipse(px,py, r*0.55*open, r*0.35*open, angle, 0, Math.PI*2);
+    ctx.fillStyle = hsla(${hue},70%,80%,0.85);
+    ctx.fill();
+    ctx.strokeStyle=hsla(${hue},60%,65%,0.5);
+    ctx.lineWidth=0.5;
+    ctx.stroke();
+  }
+  ctx.beginPath();
+  ctx.arc(cx,cy,5*open,0,Math.PI*2);
+  ctx.fillStyle=hsl(${hue+30},75%,65%);
+  ctx.fill();
+}
+
+const flowers = [
+  {id:'f1', hue:340, petals:6},
+  {id:'f2', hue:55,  petals:8},
+  {id:'f3', hue:200, petals:10},
+  {id:'f4', hue:320, petals:7},
+  {id:'f5', hue:270, petals:6},
+];
+
+let progress = {};
+flowers.forEach(f => { progress[f.id] = 0; });
+
+function animateFlowers() {
+  flowers.forEach(f => {
+    if(progress[f.id] < 1) {
+      progress[f.id] = Math.min(1, progress[f.id] + 0.012);
+    }
+    const ease = 1 - Math.pow(1-progress[f.id], 3);
+    drawFlower(f.id, f.hue, f.petals, ease);
+  });
+  requestAnimationFrame(animateFlowers);
+}
+
+setTimeout(animateFlowers, 400);
+
+// Music toggle (ambient tone via Web Audio)
+let audioCtx = null, isPlaying = false, gainNode = null, sources = [];
+
+function createAmbience(ctx) {
+  const freqs = [220, 277.18, 329.63, 415.30, 493.88];
+  freqs.forEach(freq => {
+    const osc = ctx.createOscillator();
+    const g = ctx.createGain();
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(freq, ctx.currentTime);
+    g.gain.setValueAtTime(0, ctx.currentTime);
+    g.gain.linearRampToValueAtTime(0.025, ctx.currentTime + 2);
+    osc.connect(g);
+    g.connect(gainNode);
+    osc.start();
+    sources.push({osc, g});
+  });
+}
+
+function toggleMusic() {
+  const dot = document.getElementById('musicDot');
+  const label = document.getElementById('musicLabel');
+  if(!audioCtx) {
+    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    gainNode = audioCtx.createGain();
+    gainNode.connect(audioCtx.destination);
+    createAmbience(audioCtx);
+    isPlaying = true;
+  } else if(isPlaying) {
+    gainNode.gain.linearRampToValueAtTime(0, audioCtx.currentTime + 1);
+    isPlaying = false;
+  } else {
+    gainNode.gain.linearRampToValueAtTime(1, audioCtx.currentTime + 1);
+    isPlaying = true;
+  }
+  dot.classList.toggle('playing', isPlaying);
+  label.textContent = isPlaying ? 'Ambience on' : 'Play ambience';
+}
+</script>
